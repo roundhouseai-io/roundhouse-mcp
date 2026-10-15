@@ -1,0 +1,25 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.roundhouseai/roundhouse",
+  "title": "Roundhouse",
+  "description": "Read-only analytics on x402 agent payments and ERC-8004 agent identity, with SQL.",
+  "version": "0.1.0",
+  "websiteUrl": "https://roundhouseai.io/docs/api/mcp?utm_source=mcp_registry&utm_medium=mcp_directory",
+  "icons": [
+    { "src": "https://roundhouseai.io/icon.svg", "mimeType": "image/svg+xml", "sizes": ["any"] }
+  ],
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://api.roundhouseai.io/v0/mcp",
+      "headers": [
+        {
+          "name": "x-api-key",
+          "description": "Optional Roundhouse API key (rh_live_…) from https://roundhouseai.io/dashboard/connections. Omit it to sign in with OAuth instead.",
+          "isRequired": false,
+          "isSecret": true
+        }
+      ]
+    }
+  ]
+}
