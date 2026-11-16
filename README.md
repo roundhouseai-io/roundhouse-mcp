@@ -101,7 +101,7 @@ The workflow [Publish to MCP Registry](./.github/workflows/publish-mcp.yml) runs
 1. Add a repository Actions secret named `MCP_REGISTRY_PRIVATE_KEY` (Settings → Secrets and variables → Actions). The value is the hex Ed25519 private key for `mcp-publisher login dns --private-key`, not a PEM file, and it must not be committed. It has to match the apex TXT record on `roundhouseai.io` (`v=MCPv1; k=ed25519; p=5zy/BpIBA8nWAIaVZLjIPBH23VZdVFvJSRP1U0Bb0hY=`). Confirm with `dig TXT roundhouseai.io +short`.
 2. After this change is on `main`, open **Actions → Publish to MCP Registry → Run workflow** and select `main`. Alternatively, tag the merged commit and push the tag (`git tag v0.1.1 && git push origin v0.1.1`). Push the tag only when you want that publish to happen.
 
-The workflow logs in with `mcp-publisher login dns --domain roundhouseai.io --private-key <that secret>`, validates `server.json`, then runs `mcp-publisher publish`.
+The workflow validates `server.json`, logs in with `mcp-publisher login dns --domain roundhouseai.io --private-key <that secret>`, then runs `mcp-publisher publish`.
 
 To rotate the key (required if the private key for the current TXT record is gone), use OpenSSL 3 or newer. On macOS, the system `openssl` is LibreSSL and cannot generate Ed25519 keys; use Homebrew's `openssl@3`.
 
