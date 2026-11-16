@@ -92,6 +92,29 @@ Also: CLI [`@roundhouseai/x402`](https://www.npmjs.com/package/@roundhouseai/x40
 - [ERC-8004 agents](https://roundhouseai.io/agents)
 - [Privacy](https://roundhouseai.io/privacy) · [Terms](https://roundhouseai.io/terms)
 
+## Publishing to the MCP Registry
+
+[`server.json`](./server.json) is the official registry manifest for `io.roundhouseai/roundhouse` (schema `2025-12-11`). Versions are immutable, so change the `version` field before each publish. `0.1.0` is the live entry and has no `repository`; `0.1.1` adds it. Merging this repo does not publish anything.
+
+The workflow [Publish to MCP Registry](./.github/workflows/publish-mcp.yml) runs only from **Actions → Run workflow**, or when a `v*` tag is pushed (for example `v0.1.1`). It does not run on branch pushes or pull requests.
+
+1. Add a repository Actions secret named `MCP_REGISTRY_PRIVATE_KEY` (Settings → Secrets and variables → Actions). The value is the hex Ed25519 private key for `mcp-publisher login dns --private-key`, not a PEM file, and it must not be committed. It has to match the apex TXT record on `roundhouseai.io` (`v=MCPv1; k=ed25519; p=5zy/BpIBA8nWAIaVZLjIPBH23VZdVFvJSRP1U0Bb0hY=`). Confirm with `dig TXT roundhouseai.io +short`.
+2. After this change is on `main`, open **Actions → Publish to MCP Registry → Run workflow** and select `main`. Alternatively, tag the merged commit and push the tag (`git tag v0.1.1 && git push origin v0.1.1`). Push the tag only when you want that publish to happen.
+
+The workflow validates `server.json`, logs in with `mcp-publisher login dns --domain roundhouseai.io --private-key <that secret>`, then runs `mcp-publisher publish`.
+
+To rotate the key (required if the private key for the current TXT record is gone), use OpenSSL 3 or newer. On macOS, the system `openssl` is LibreSSL and cannot generate Ed25519 keys; use Homebrew's `openssl@3`.
+
+```bash
+openssl genpkey -algorithm Ed25519 -out key.pem
+PUBLIC_KEY="$(openssl pkey -in key.pem -pubout -outform DER | tail -c 32 | base64)"
+echo "roundhouseai.io. IN TXT \"v=MCPv1; k=ed25519; p=${PUBLIC_KEY}\""
+PRIVATE_KEY="$(openssl pkey -in key.pem -noout -text | grep -A3 'priv:' | tail -n +2 | tr -d ' :\n')"
+printf '%s\n' "$PRIVATE_KEY"
+```
+
+Copy that hex into `MCP_REGISTRY_PRIVATE_KEY`, then delete `key.pem`. Replace the apex TXT record with the new value and delete the previous `v=MCPv1` record in the same change. The record has to be on `roundhouseai.io` itself, not under `_mcp-auth` or `_mcp-registry`. A stale MCPv1 record left on the apex is tried first and verification fails. Wait until `dig TXT roundhouseai.io +short` shows the new record and not the old one, update the secret, then run the workflow.
+
 ## License
 
 [MIT](./LICENSE)

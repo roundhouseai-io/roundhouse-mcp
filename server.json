@@ -3,7 +3,11 @@
   "name": "io.roundhouseai/roundhouse",
   "title": "Roundhouse",
   "description": "Read-only analytics on x402 agent payments and ERC-8004 agent identity, with SQL.",
-  "version": "0.1.0",
+  "version": "0.1.1",
+  "repository": {
+    "url": "https://github.com/roundhouseai-io/roundhouse-mcp",
+    "source": "github"
+  },
   "websiteUrl": "https://roundhouseai.io/docs/api/mcp?utm_source=mcp_registry&utm_medium=mcp_directory",
   "icons": [
     { "src": "https://roundhouseai.io/icon.svg", "mimeType": "image/svg+xml", "sizes": ["any"] }
